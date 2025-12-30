@@ -1,35 +1,60 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+
+import Home from "./pages/Home";
+import History from "./pages/History";
+import Location from "./pages/Location";
+import EventDetail from "./pages/EventDetail";
+import Ticket from "./pages/Ticket";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+
+import Navbar from "./components/public/Navbar";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [page, setPage] = useState("home");
+  console.log("PAGE SEKARANG:", page);
+
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {/* 🔒 Navbar hanya tampil di halaman user */}
+      {page !== "login" && page !== "admin" && (
+        <Navbar
+          setPage={setPage}
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
+
+      {/* ===== USER PAGES ===== */}
+      {page === "home" && (
+        <Home
+          setPage={setPage}
+          setSelectedEvent={setSelectedEvent}
+          searchQuery={searchQuery}
+        />
+      )}
+
+      {page === "history" && <History setPage={setPage} />}
+      {page === "location" && <Location setPage={setPage} />}
+
+      {page === "eventDetail" && (
+        <EventDetail setPage={setPage} eventData={selectedEvent} />
+      )}
+
+      {page === "ticket" && (
+        <Ticket setPage={setPage} eventData={selectedEvent} />
+      )}
+
+      {/* ===== ADMIN ===== */}
+      {page === "login" && <AdminLogin setPage={setPage} />}
+      {page === "admin" && <AdminDashboard setPage={setPage} />}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
