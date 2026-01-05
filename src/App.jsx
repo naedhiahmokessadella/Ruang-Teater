@@ -1,58 +1,55 @@
 import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 
+// Pages
 import Home from "./pages/Home";
 import History from "./pages/History";
 import Location from "./pages/Location";
-import EventDetail from "./pages/EventDetail";
+import EventDetail from "./pages/components/EventDetail";
 import Ticket from "./pages/Ticket";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
+import Favorite from "./pages/components/Favorite";
+import AdminLogin from "./auth/adminauth/AdminLogin";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import Profile from "./pages/Profile";
 
+// Components
 import Navbar from "./components/public/Navbar";
+import Footer from "./components/public/Footer";
 
 function App() {
-  const [page, setPage] = useState("home");
-  console.log("PAGE SEKARANG:", page);
-
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  // 🔹 Tambahkan state search di App.jsx
   const [searchInput, setSearchInput] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <>
-      {/* 🔒 Navbar hanya tampil di halaman user */}
-      {page !== "login" && page !== "admin" && (
-        <Navbar
-          setPage={setPage}
-          searchInput={searchInput}
-          setSearchInput={setSearchInput}
-          setSearchQuery={setSearchQuery}
-        />
-      )}
+      {/* Pass state ke Navbar */}
+      <Navbar
+        searchInput={searchInput}
+        setSearchInput={setSearchInput}
+      />
 
-      {/* ===== USER PAGES ===== */}
-      {page === "home" && (
-        <Home
-          setPage={setPage}
-          setSelectedEvent={setSelectedEvent}
-          searchQuery={searchQuery}
-        />
-      )}
+      <Routes>
+        {/* USER */}
+        <Route path="/" element={<Home searchQuery={searchInput} />} />
+        <Route path="/favorite" element={<Favorite />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/location" element={<Location />} />
+        <Route path="/event/:id" element={<EventDetail />} />
+        <Route path="/ticket/:id" element={<Ticket />} />
+        
 
-      {page === "history" && <History setPage={setPage} />}
-      {page === "location" && <Location setPage={setPage} />}
+        {/* PROFILE */}
+        <Route path="/profile" element={<Profile />} />
 
-      {page === "eventDetail" && (
-        <EventDetail setPage={setPage} eventData={selectedEvent} />
-      )}
+        {/* ADMIN */}
+        <Route path="/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminDashboard />} />
 
-      {page === "ticket" && (
-        <Ticket setPage={setPage} eventData={selectedEvent} />
-      )}
+        {/* fallback */}
+        <Route path="*" element={<Home searchQuery={searchInput} />} />
+      </Routes>
 
-      {/* ===== ADMIN ===== */}
-      {page === "login" && <AdminLogin setPage={setPage} />}
-      {page === "admin" && <AdminDashboard setPage={setPage} />}
+      <Footer />
     </>
   );
 }

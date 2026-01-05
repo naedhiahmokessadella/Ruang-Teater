@@ -1,21 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import Footer from "../components/public/Footer";
 import ProductCard from "../components/public/ProductCard";
 import useDummyData from "../hooks/useDummyData";
-import {
-  Sparkles,
-  Calendar,
-  MapPin,
-  Star,
-  TrendingUp,
-  Clock,
-} from "lucide-react";
+import { Sparkles, Calendar, MapPin, Star, TrendingUp, Clock } from "lucide-react";
 
-export default function Home({ setPage, setSelectedEvent, searchQuery }) {
+export default function Home({ searchQuery }) {
   const { events } = useDummyData();
   const [favorites, setFavorites] = useState([]);
   const [voucherClaimed, setVoucherClaimed] = useState(false);
+  const navigate = useNavigate();
 
+  // Toggle favorite
   const toggleFavorite = (event) => {
     setFavorites((prev) =>
       prev.some((e) => e.id === event.id)
@@ -24,14 +20,15 @@ export default function Home({ setPage, setSelectedEvent, searchQuery }) {
     );
   };
 
+  // Voucher
   const handleClaimVoucher = () => {
     setVoucherClaimed(true);
     alert("🎉 Voucher FIRST20 berhasil diklaim!");
   };
 
-  // 🔍 FILTER EVENT BERDASARKAN SEARCH QUERY
+  // 🔍 FILTER EVENTS BERDASARKAN SEARCH
   const filteredEvents = events.filter((event) =>
-    event.title.toLowerCase().includes(searchQuery.toLowerCase())
+    (event.title || "").toLowerCase().includes((searchQuery || "").toLowerCase())
   );
 
   return (
@@ -39,7 +36,6 @@ export default function Home({ setPage, setSelectedEvent, searchQuery }) {
       {/* HERO */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-red-700 via-red-800 to-pink-950" />
-
         <div className="absolute inset-0 flex items-center justify-center opacity-20">
           <img
             src="/ruang-teater.jpg"
@@ -88,8 +84,8 @@ export default function Home({ setPage, setSelectedEvent, searchQuery }) {
                     primary
                     isFavorite={favorites.some((e) => e.id === event.id)}
                     onToggleFavorite={() => toggleFavorite(event)}
-                    setPage={setPage}
-                    setSelectedEvent={setSelectedEvent}
+                    setPage={(page) => navigate(`/${page}`)}
+                    setSelectedEvent={(ev) => navigate(`/event/${ev.id}`)}
                   />
                 </div>
               ))}
@@ -116,8 +112,8 @@ export default function Home({ setPage, setSelectedEvent, searchQuery }) {
                   event={event}
                   isFavorite={favorites.some((e) => e.id === event.id)}
                   onToggleFavorite={() => toggleFavorite(event)}
-                  setPage={setPage}
-                  setSelectedEvent={setSelectedEvent}
+                  setPage={(page) => navigate(`/${page}`)}
+                  setSelectedEvent={(ev) => navigate(`/event/${ev.id}`)}
                 />
               ))}
             </div>
@@ -148,8 +144,10 @@ export default function Home({ setPage, setSelectedEvent, searchQuery }) {
       </main>
 
       {/* FOOTER */}
-      <Footer setPage={setPage} activePage="home" />
-      <div className="bg-red-950 text-amber-100 py-8 text-center border-t-4 border-amber-600">© 2024 Ruang Teater</div>;
+      <Footer setPage={(page) => navigate(`/${page}`)} activePage="home" />
+      <div className="bg-red-950 text-amber-100 py-8 text-center border-t-4 border-amber-600">
+        © 2024 Ruang Teater
+      </div>
     </div>
   );
 }

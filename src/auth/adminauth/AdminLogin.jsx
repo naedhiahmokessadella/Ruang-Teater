@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ import useNavigate
 
-export default function AdminLogin({ setPage }) {
+export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate(); // ✅ hook navigate
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -12,10 +15,10 @@ export default function AdminLogin({ setPage }) {
     console.log("Password:", password);
 
     if (email === "admin@gmail.com" && password === "admin123") {
-    setPage("admin"); // 🔥 INI KUNCINYA
+      navigate("/admin"); // 🔥 ganti setPage ke navigate
     } else {
-    console.log("❌ Login gagal");
-    setError("Email atau password salah");
+      console.log("❌ Login gagal");
+      setError("Email atau password salah");
     }
   };
 

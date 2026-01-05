@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { useEvents } from "../context/EventContext";
-import AdminHeader from "../components/admin/AdminHeader";
+import { useNavigate } from "react-router-dom"; // ✅ pakai navigate
+import { useEvents } from "../../context/EventContext";
+import AdminHeader from "./component/AdminHeader";
 import { Plus, X } from "lucide-react";
 
-export default function AdminDashboard({ setPage }) {
+export default function AdminDashboard() {
   const { events, setEvents } = useEvents();
+  const navigate = useNavigate(); // ✅ navigasi react router
+
   const [showForm, setShowForm] = useState(false);
-  
+
   // State untuk form
   const [formData, setFormData] = useState({
     title: "",
@@ -17,30 +20,22 @@ export default function AdminDashboard({ setPage }) {
     description: "",
     image: ""
   });
-  
-  console.log("ADMIN DASHBOARD TERLOAD");
-  console.log("Events:", events);
 
   // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
   // Handle submit form
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Validasi
+
     if (!formData.title || !formData.date || !formData.location || !formData.capacity) {
       alert("Mohon lengkapi semua field yang wajib diisi!");
       return;
     }
 
-    // Buat event baru
     const newEvent = {
       id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
       title: formData.title,
@@ -52,10 +47,8 @@ export default function AdminDashboard({ setPage }) {
       image: formData.image || `https://picsum.photos/400/300?random=${Date.now()}`
     };
 
-    // Tambahkan ke events
     setEvents([...events, newEvent]);
 
-    // Reset form dan tutup modal
     setFormData({
       title: "",
       date: "",
@@ -86,20 +79,10 @@ export default function AdminDashboard({ setPage }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AdminHeader setPage={setPage} />
-      
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-          <button
-            onClick={() => setPage("login")}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-          >
-            Logout
-          </button>
-        </div>
+      {/* Navbar Admin dengan tombol Logout */}
+      <AdminHeader setPage={() => navigate("/login")} /> {/* ✅ navigasi ke login */}
 
-        {/* Tombol Tambah Event */}
+      <div className="p-6">
         <div className="mb-6">
           <button
             onClick={() => setShowForm(true)}
@@ -116,16 +99,13 @@ export default function AdminDashboard({ setPage }) {
             <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
                 <h2 className="text-xl font-bold">Tambah Event Baru</h2>
-                <button
-                  onClick={handleCancel}
-                  className="text-gray-500 hover:text-gray-700"
-                >
+                <button onClick={handleCancel} className="text-gray-500 hover:text-gray-700">
                   <X size={24} />
                 </button>
               </div>
 
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                {/* Title */}
+                {/* Semua input sama seperti sebelumnya */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">
                     Judul Event <span className="text-red-500">*</span>
@@ -141,7 +121,6 @@ export default function AdminDashboard({ setPage }) {
                   />
                 </div>
 
-                {/* Date */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">
                     Tanggal <span className="text-red-500">*</span>
@@ -156,7 +135,6 @@ export default function AdminDashboard({ setPage }) {
                   />
                 </div>
 
-                {/* Location */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">
                     Lokasi <span className="text-red-500">*</span>
@@ -172,7 +150,6 @@ export default function AdminDashboard({ setPage }) {
                   />
                 </div>
 
-                {/* Capacity */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">
                     Kapasitas <span className="text-red-500">*</span>
@@ -189,7 +166,6 @@ export default function AdminDashboard({ setPage }) {
                   />
                 </div>
 
-                {/* Attendees */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">
                     Jumlah Peserta Saat Ini
@@ -205,11 +181,8 @@ export default function AdminDashboard({ setPage }) {
                   />
                 </div>
 
-                {/* Description */}
                 <div>
-                  <label className="block text-sm font-semibold mb-2">
-                    Deskripsi
-                  </label>
+                  <label className="block text-sm font-semibold mb-2">Deskripsi</label>
                   <textarea
                     name="description"
                     value={formData.description}
@@ -220,11 +193,8 @@ export default function AdminDashboard({ setPage }) {
                   />
                 </div>
 
-                {/* Image URL */}
                 <div>
-                  <label className="block text-sm font-semibold mb-2">
-                    URL Gambar
-                  </label>
+                  <label className="block text-sm font-semibold mb-2">URL Gambar</label>
                   <input
                     type="text"
                     name="image"
@@ -238,7 +208,6 @@ export default function AdminDashboard({ setPage }) {
                   </p>
                 </div>
 
-                {/* Buttons */}
                 <div className="flex gap-3 pt-4">
                   <button
                     type="submit"
@@ -262,7 +231,7 @@ export default function AdminDashboard({ setPage }) {
         {/* Tabel Event */}
         <div className="bg-white rounded-xl shadow p-4">
           <h2 className="text-xl font-semibold mb-4">Event Management</h2>
-          
+
           {events && events.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">

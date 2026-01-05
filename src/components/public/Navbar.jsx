@@ -1,20 +1,31 @@
 import { Bell, Search } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ProfileMenu from "../public/ProfileMenu"; // pastikan path benar
 
-export default function Navbar({ setPage, searchInput, setSearchInput, setSearchQuery }) {
+export default function Navbar({ searchInput, setSearchInput, setSearchQuery }) {
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false); // state untuk dropdown menu
 
+  // 🔍 SEARCH: jalankan pencarian saat Enter
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      setSearchQuery(searchInput); // 🔥 Jalankan pencarian saat Enter
-      setPage("home"); // tetap di home
+      // Navigasi tetap di home tapi searchQuery akan dipakai di Home
+      navigate("/");
     }
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
-    <nav className="flex items-center justify-between px-10 py-4 bg-white shadow-sm">
+    <nav className="flex items-center justify-between px-10 py-4 bg-white shadow-sm relative">
       {/* Logo */}
       <h1
-        onClick={() => setPage("home")}
-        className="text-2xl font-bold cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"
+        onClick={() => navigate("/")}
+        className="text-2xl font-bold cursor-pointer bg-gradient-to-r from-red-900 to-red-500 bg-clip-text text-transparent"
       >
         Events
       </h1>
@@ -28,14 +39,14 @@ export default function Navbar({ setPage, searchInput, setSearchInput, setSearch
             placeholder="Cari tiket..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={handleKeyDown} // 🔥 Enter trigger search
+            onKeyDown={handleKeyDown} 
             className="bg-transparent outline-none text-sm w-40"
           />
         </div>
 
         {/* Admin */}
         <button
-          onClick={() => setPage("login")}
+          onClick={() => navigate("/login")}
           className="text-sm font-medium text-red-600 hover:underline"
         >
           Admin
@@ -47,12 +58,18 @@ export default function Navbar({ setPage, searchInput, setSearchInput, setSearch
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </div>
 
-        {/* Avatar */}
-        <img
-          src="/events/profil.jpeg"
-          alt="User"
-          className="w-9 h-9 rounded-full object-cover cursor-pointer"
-        />
+        {/* Avatar + ProfileMenu */}
+        <div className="relative">
+          <img
+            src="/events/profil.jpeg"
+            alt="User"
+            className="w-9 h-9 rounded-full object-cover cursor-pointer"
+            onClick={() => setMenuOpen(!menuOpen)}
+          />
+
+          {/* Dropdown menu */}
+          {menuOpen && <ProfileMenu onLogout={handleLogout} />}
+        </div>
       </div>
     </nav>
   );

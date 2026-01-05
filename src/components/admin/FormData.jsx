@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function FormData({ onSubmit, onCancel }) {
+export default function FormData({ onSubmit }) {
   const [judul, setJudul] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
     if (!judul.trim()) {
@@ -10,6 +12,14 @@ export default function FormData({ onSubmit, onCancel }) {
     }
     onSubmit({ judul });
     setJudul(""); // Reset form
+
+    // Navigasi ke halaman admin setelah submit
+    navigate("/admin");
+  };
+
+  const handleCancel = () => {
+    // Navigasi ke halaman admin saat batal
+    navigate("/admin");
   };
 
   return (
@@ -29,7 +39,7 @@ export default function FormData({ onSubmit, onCancel }) {
           Simpan
         </button>
         <button
-          onClick={onCancel}
+          onClick={handleCancel}
           className="bg-gray-400 text-white px-4 py-2 rounded"
         >
           Batal

@@ -1,8 +1,17 @@
-import * as React from "react"
+import * as React from "react";
+import { useNavigate } from "react-router-dom"; // ✅ import navigate
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
+const Input = React.forwardRef(({ className, type, to, onClick, ...props }, ref) => {
+  const navigate = useNavigate();
 
-const Input = React.forwardRef(({ className, type, ...props }, ref) => {
+  const handleClick = (e) => {
+    if (to) {
+      navigate(to); // navigasi ke route tertentu
+    }
+    if (onClick) onClick(e); // tetap jalankan event handler asli
+  };
+
   return (
     <input
       type={type}
@@ -11,9 +20,12 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
         className
       )}
       ref={ref}
-      {...props} />
+      onClick={handleClick} // ganti onClick default
+      {...props}
+    />
   );
-})
-Input.displayName = "Input"
+});
 
-export { Input }
+Input.displayName = "Input";
+
+export { Input };

@@ -1,6 +1,14 @@
 import { Edit2, Trash2, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export default function Datatable({ data, columns, onEdit, onDelete, onView }) {
+export default function Datatable({ data, columns, onEdit, onDelete }) {
+  const navigate = useNavigate();
+
+  const handleView = (item) => {
+    // Navigasi ke halaman detail berdasarkan ID
+    navigate(`/event/${item.id}`);
+  };
+
   return (
     <div className="bg-white p-4 rounded shadow">
       <h3 className="text-lg font-bold mb-3">Data Event</h3>
@@ -25,7 +33,7 @@ export default function Datatable({ data, columns, onEdit, onDelete, onView }) {
               ))}
               <td className="border p-2 space-x-2">
                 <button
-                  onClick={() => onView(item)}
+                  onClick={() => handleView(item)}
                   className="text-blue-600"
                 >
                   <Eye size={18} />
