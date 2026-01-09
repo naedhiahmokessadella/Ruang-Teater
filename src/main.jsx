@@ -1,15 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./index.css";
-import { EventProvider } from "./context/EventContext.jsx";
-
-// ✅ Tambahkan BrowserRouter
 import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import { EventProvider } from "./context/EventContext";
+import "./index.css";
 
-const rootElement = document.getElementById("root");
-
-ReactDOM.createRoot(rootElement).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <EventProvider>

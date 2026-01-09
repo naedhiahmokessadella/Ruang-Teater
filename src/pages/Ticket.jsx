@@ -1,23 +1,72 @@
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
-import useDummyData from "../hooks/useDummyData";
+import { useEvents } from "../context/EventContext";
+import { useEffect } from "react";
 
 export default function Ticket() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  const { events } = useDummyData();
+  const { events, loading } = useEvents();
 
-  const event =
-    location.state ||
-    events.find((e) => e.id === Number(id)) || {
-      title: "Event Not Found",
-      date: "-",
-      time: "-",
-      location: "-",
-      image: "https://via.placeholder.com/600x400",
-      price: "-",
+  /* ================= LOADING ================= */
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-600">
+        Loading ticket...
+      </div>
+    );
+  }
+
+  /* ================= GET EVENT ================= */
+  const eventFromState = location.state;
+  const eventFromContext = events.find(
+    (e) => String(e.id) === String(id)
+  );
+
+  const event = eventFromState || eventFromContext;
+
+  /* ================= GUARD ================= */
+  if (!event) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-gray-600">
+        <p className="mb-4">❌ Event tidak ditemukan</p>
+        <button
+          onClick={() => navigate("/")}
+          className="px-6 py-2 bg-red-700 text-white rounded-lg"
+        >
+          Kembali ke Home
+        </button>
+      </div>
+    );
+  }
+
+  /* ================= AUTO REGISTER ================= */
+  useEffect(() => {
+    const existing =
+      JSON.parse(localStorage.getItem("registrations")) || [];
+
+    const alreadyRegistered = existing.some(
+      (r) => r.eventId === event.id
+    );
+
+    if (alreadyRegistered) return;
+
+    const newRegistration = {
+      id: Date.now(),
+      eventId: event.id,
+      eventTitle: event.title,
+      name: "Nama User",
+      email: "user@gmail.com",
+      phone: "08123456789",
+      registeredAt: new Date().toISOString(),
     };
+
+    localStorage.setItem(
+      "registrations",
+      JSON.stringify([...existing, newRegistration])
+    );
+  }, [event]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
@@ -43,8 +92,9 @@ export default function Ticket() {
         {/* CONTENT */}
         <div className="p-5">
           <h2 className="font-bold text-lg">{event.title}</h2>
+
           <p className="text-xs text-gray-500 mb-4">
-            Ticket ID: RT-{event.id}X{Math.floor(Math.random() * 9999)}
+            Ticket ID: RT-{event.id}-{Math.floor(Math.random() * 9999)}
           </p>
 
           <div className="space-y-2 text-sm">
@@ -57,6 +107,7 @@ export default function Ticket() {
             <span>Seat</span>
             <span>A{event.id}</span>
           </div>
+
           <div className="flex justify-between font-semibold text-sm">
             <span>Price</span>
             <span>{event.price}</span>
@@ -66,7 +117,7 @@ export default function Ticket() {
         {/* BARCODE */}
         <div className="border-t border-dashed p-6 flex flex-col items-center">
           <img
-            src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=RUANG-TEATER"
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=RUANG-TEATER-${event.id}`}
             alt="barcode"
             className="h-20 mb-2"
           />
