@@ -1,56 +1,68 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
-// Pages
+// ===== USER PAGES =====
 import Home from "./pages/Home";
 import History from "./pages/History";
 import Location from "./pages/Location";
 import EventDetail from "./pages/components/EventDetail";
 import Ticket from "./pages/Ticket";
 import Favorite from "./pages/components/Favorite";
-import AdminLogin from "./auth/adminauth/AdminLogin";
-import AdminDashboard from "./components/admin/AdminDashboard";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 
-// Components
+// ===== AUTH =====
+import UserLogin from "./auth/userauth/userlogin";
+import SignupUser from "./auth/userauth/SignupUser";
+import AdminLogin from "./auth/adminauth/AdminLogin";
+
+// ===== ADMIN =====
+import AdminDashboard from "./components/admin/AdminDashboard";
+
+// ===== COMPONENTS =====
 import Navbar from "./components/public/Navbar";
 import Footer from "./components/public/Footer";
 
 function App() {
-  // 🔹 Tambahkan state search di App.jsx
   const [searchInput, setSearchInput] = useState("");
 
   return (
-    <>
-      {/* Pass state ke Navbar */}
-      <Navbar
-        searchInput={searchInput}
-        setSearchInput={setSearchInput}
+    <Routes>
+      {/* ================= HOME (PAKAI NAVBAR) ================= */}
+      <Route
+        path="/"
+        element={
+          <>
+            <Navbar
+              searchInput={searchInput}
+              setSearchInput={setSearchInput}
+            />
+            <Home searchQuery={searchInput} />
+            <Footer />
+          </>
+        }
       />
 
-      <Routes>
-        {/* USER */}
-        <Route path="/" element={<Home searchQuery={searchInput} />} />
-        <Route path="/favorite" element={<Favorite />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/location" element={<Location />} />
-        <Route path="/event/:id" element={<EventDetail />} />
-        <Route path="/ticket/:id" element={<Ticket />} />
-        
+      {/* ================= USER PAGES (NO NAVBAR) ================= */}
+      <Route path="/favorite" element={<Favorite />} />
+      <Route path="/history" element={<History />} />
+      <Route path="/location" element={<Location />} />
+      <Route path="/event/:id" element={<EventDetail />} />
+      <Route path="/ticket/:id" element={<Ticket />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/profile/edit" element={<EditProfile />} />
 
-        {/* PROFILE */}
-        <Route path="/profile" element={<Profile />} />
+      {/* ================= AUTH (NO NAVBAR) ================= */}
+      <Route path="/login" element={<AdminLogin />} />
+      <Route path="/user-login" element={<UserLogin />} />
+      <Route path="/signup" element={<SignupUser />} />
 
-        {/* ADMIN */}
-        <Route path="/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+      {/* ================= ADMIN ================= */}
+      <Route path="/admin" element={<AdminDashboard />} />
 
-        {/* fallback */}
-        <Route path="*" element={<Home searchQuery={searchInput} />} />
-      </Routes>
-
-      <Footer />
-    </>
+      {/* ================= FALLBACK ================= */}
+      <Route path="*" element={<Home searchQuery={searchInput} />} />
+    </Routes>
   );
 }
 

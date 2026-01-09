@@ -1,4 +1,4 @@
-import { User, Ticket, LogOut, History } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function ProfileMenu({ onLogout }) {
@@ -11,20 +11,6 @@ export default function ProfileMenu({ onLogout }) {
         className="flex items-center gap-2 px-4 py-3 hover:bg-gray-100 w-full"
       >
         <User size={16} /> Profile
-      </button>
-
-      <button
-        onClick={() => navigate("/my-tickets")}
-        className="flex items-center gap-2 px-4 py-3 hover:bg-gray-100 w-full"
-      >
-        <Ticket size={16} /> Tiket Saya
-      </button>
-
-      <button
-        onClick={() => navigate("/transactions")}
-        className="flex items-center gap-2 px-4 py-3 hover:bg-gray-100 w-full"
-      >
-        <History size={16} /> Riwayat
       </button>
 
       <div className="border-t" />
