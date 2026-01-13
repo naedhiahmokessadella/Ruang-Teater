@@ -7,7 +7,8 @@ export default function Ticket() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  const { events, loading } = useEvents();
+  const { events, loading, updateEvent } = useEvents();
+
 
   /* ================= LOADING ================= */
   if (loading) {
@@ -43,30 +44,38 @@ export default function Ticket() {
 
   /* ================= AUTO REGISTER ================= */
   useEffect(() => {
-    const existing =
-      JSON.parse(localStorage.getItem("registrations")) || [];
+  const existing =
+    JSON.parse(localStorage.getItem("registrations")) || [];
 
-    const alreadyRegistered = existing.some(
-      (r) => r.eventId === event.id
-    );
+  const alreadyRegistered = existing.some(
+    (r) => r.eventId === event.id
+  );
 
-    if (alreadyRegistered) return;
+  if (alreadyRegistered) return;
 
-    const newRegistration = {
-      id: Date.now(),
-      eventId: event.id,
-      eventTitle: event.title,
-      name: "Nama User",
-      email: "user@gmail.com",
-      phone: "08123456789",
-      registeredAt: new Date().toISOString(),
-    };
+  /* ===== SIMPAN REGISTRATION ===== */
+  const newRegistration = {
+    id: Date.now(),
+    eventId: event.id,
+    eventTitle: event.title,
+    name: "Nama User",
+    email: "user@gmail.com",
+    phone: "08123456789",
+    registeredAt: new Date().toISOString(),
+  };
 
-    localStorage.setItem(
-      "registrations",
-      JSON.stringify([...existing, newRegistration])
-    );
-  }, [event]);
+  localStorage.setItem(
+    "registrations",
+    JSON.stringify([...existing, newRegistration])
+  );
+
+  /* ===== UPDATE ATTENDEES EVENT ===== */
+  updateEvent(event.id, {
+    ...event,
+    attendees: Number(event.attendees || 0) + 1,
+  });
+}, [event, updateEvent]);
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">

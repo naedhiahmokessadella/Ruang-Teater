@@ -26,35 +26,15 @@ export default function AdminSidebar() {
           icon: <Calendar size={18} />,
           to: "/admin/events",
         },
-        {
-          label: "Categories",
-          icon: <Layers size={18} />,
-          to: "/admin/categories",
-        },
       ],
     },
     {
       title: "MANAGEMENT",
       items: [
         {
-          label: "Registrations",
-          icon: <ClipboardList size={18} />,
-          to: "/admin/registrations",
-        },
-        {
           label: "Users",
           icon: <Users size={18} />,
           to: "/admin/users",
-        },
-      ],
-    },
-    {
-      title: "ANALYTICS",
-      items: [
-        {
-          label: "Reports",
-          icon: <BarChart3 size={18} />,
-          to: "/admin/reports",
         },
       ],
     },

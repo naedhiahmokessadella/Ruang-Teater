@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Users } from "lucide-react";
+import { Users, Eye } from "lucide-react";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -8,67 +8,92 @@ export default function AdminUsers() {
     const registrations =
       JSON.parse(localStorage.getItem("registrations")) || [];
 
-    // Ambil user unik berdasarkan email
-    const uniqueUsers = [];
-    const emailSet = new Set();
+    const map = {};
 
     registrations.forEach((r) => {
-      if (!emailSet.has(r.email)) {
-        emailSet.add(r.email);
-        uniqueUsers.push({
+      if (!map[r.email]) {
+        map[r.email] = {
           name: r.name,
           email: r.email,
           phone: r.phone,
           firstRegister: r.registeredAt,
-        });
+          tickets: 0,
+          events: new Set(),
+          status: "Active",
+        };
       }
+
+      map[r.email].tickets += 1;
+      map[r.email].events.add(r.eventTitle);
     });
 
-    setUsers(uniqueUsers);
+    const result = Object.values(map).map((u) => ({
+      ...u,
+      events: Array.from(u.events),
+    }));
+
+    setUsers(result);
   }, []);
 
   return (
-    <div className="p-6">
-      <div className="bg-white p-6 rounded-xl shadow">
-        <div className="flex items-center gap-3 mb-4">
-          <Users className="text-blue-600" />
-          <h1 className="text-2xl font-bold">Users</h1>
-        </div>
+    <div className="bg-white rounded-2xl shadow p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <Users className="text-blue-600" />
+        <h1 className="text-2xl font-bold">Users</h1>
+      </div>
 
-        {users.length === 0 ? (
-          <p className="text-gray-500">
-            Belum ada user yang mendaftar
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-3 text-left">User</th>
+              <th className="p-3 text-left">Email</th>
+              <th className="p-3 text-center">Tickets</th>
+              <th className="p-3 text-left">Events</th>
+              <th className="p-3 text-center">Status</th>
+              <th className="p-3 text-center">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {users.map((u, i) => (
+              <tr key={i} className="border-b hover:bg-gray-50">
+                <td className="p-3">
+                  <p className="font-semibold">{u.name}</p>
+                  <p className="text-xs text-gray-500">{u.phone}</p>
+                </td>
+
+                <td className="p-3">{u.email}</td>
+
+                <td className="p-3 text-center font-bold text-blue-600">
+                  {u.tickets}
+                </td>
+
+                <td className="p-3">
+                  {u.events.slice(0, 2).join(", ")}
+                  {u.events.length > 2 && " ..."}
+                </td>
+
+                <td className="p-3 text-center">
+                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
+                    {u.status}
+                  </span>
+                </td>
+
+                <td className="p-3 text-center">
+                  <button className="text-blue-600 hover:bg-blue-50 p-2 rounded">
+                    <Eye size={16} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {users.length === 0 && (
+          <p className="text-center text-gray-500 mt-6">
+            Belum ada user yang membeli tiket
           </p>
-        ) : (
-          <div className="overflow-x-auto mt-4">
-            <table className="w-full text-sm border">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="p-3 text-left">Nama</th>
-                  <th className="p-3 text-left">Email</th>
-                  <th className="p-3 text-left">No HP</th>
-                  <th className="p-3 text-left">Terdaftar Sejak</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {users.map((u, i) => (
-                  <tr key={i} className="border-t">
-                    <td className="p-3 font-medium">
-                      {u.name}
-                    </td>
-                    <td className="p-3">{u.email}</td>
-                    <td className="p-3">{u.phone}</td>
-                    <td className="p-3">
-                      {new Date(
-                        u.firstRegister
-                      ).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         )}
       </div>
     </div>

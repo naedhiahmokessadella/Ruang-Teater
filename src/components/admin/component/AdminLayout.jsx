@@ -9,12 +9,12 @@ export default function AdminLayout() {
       <AdminSidebar />
 
       {/* CONTENT */}
-      <div className="ml-64 flex-1 flex flex-col">
+      <div className="ml-64 flex-1 flex flex-col z-40 sticky top-0">
         {/* HEADER (FIXED) */}
         <AdminHeader />
 
         {/* MAIN CONTENT */}
-        <main className="p-6 flex-1 overflow-y-auto mt-16 relative z-10">
+        <main className="p-6 flex-1 overflow-y-auto mt-16 relative ">
           <Outlet />
         </main>
       </div>
