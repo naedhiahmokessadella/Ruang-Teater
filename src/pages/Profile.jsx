@@ -1,6 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { User, Edit3, LogOut } from "lucide-react";
+import {
+  Heart,
+  Download,
+  Globe,
+  MapPin,
+  CreditCard,
+  Trash2,
+  LogOut,
+  ChevronRight,
+} from "lucide-react";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -8,90 +17,112 @@ export default function Profile() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-
     if (!storedUser) {
       navigate("/user-login");
       return;
     }
-
     setUser(JSON.parse(storedUser));
   }, [navigate]);
 
   if (!user) return null;
 
   return (
-    <div className="max-w-5xl mx-auto pt-28 px-6">
-      {/* TITLE */}
-      <h1 className="text-3xl font-bold mb-8">My Profil</h1>
+    // 🔴 BACKGROUND MERAH MAROON
+    <div className="min-h-screen bg-[#800000] flex justify-center px-3 sm:px-6">
+      <div className="w-full max-w-md pt-20 pb-10">
+        <h1 className="text-2xl font-bold mb-6 text-white text-center">
+          My Profile
+        </h1>
 
-      {/* PROFILE CARD */}
-      <div className="bg-white rounded-2xl shadow-md p-8 mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          {/* FOTO PROFIL */}
+        {/* CARD USER */}
+        <div className="bg-white rounded-2xl shadow p-4 sm:p-5 flex items-center gap-4 mb-6">
           <img
             src={user.photo || "/events/profil.jpeg"}
-            alt="User"
-            className="w-24 h-24 rounded-full object-cover border"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border"
           />
 
-          <div>
-            {/* NAMA */}
-            <h2 className="text-xl font-semibold">
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-base sm:text-lg truncate">
               {user.name || "Nama belum diisi"}
             </h2>
-
-            {/* EMAIL */}
-            <p className="text-gray-500 text-sm">
+            <p className="text-sm text-gray-500 truncate">
               {user.email || "Email belum diisi"}
             </p>
 
-            {/* EDIT BUTTON */}
             <button
               onClick={() => navigate("/profile/edit")}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50"
+              className="
+                mt-3
+                px-4 py-1.5
+                text-sm
+                rounded-full
+                bg-red-500
+                text-white
+                hover:bg-red-600
+              "
             >
-              <Edit3 size={16} />
-              Edit Profil
+              Edit Profile
             </button>
           </div>
         </div>
 
-        {/* ICON KANAN */}
-        <User size={80} className="text-gray-100 hidden md:block" />
-      </div>
+        {/* MENU */}
+        <div className="space-y-3">
+          <Item icon={<Heart size={18} />} label="Favorites" />
+          <Item icon={<Download size={18} />} label="Downloads" />
+          <Item icon={<Globe size={18} />} label="Language" />
+          <Item icon={<MapPin size={18} />} label="Location" />
+          <Item icon={<CreditCard size={18} />} label="Subscription" />
+          <Item icon={<Trash2 size={18} />} label="Clear cache" />
 
-      {/* ACCOUNT MENU */}
-      <div className="bg-white rounded-2xl shadow divide-y overflow-hidden">
-        <ProfileItem label="Pengaturan Akun" />
-        <ProfileItem label="Pusat Bantuan" />
-        <ProfileItem label="Tentang Aplikasi" />
-
-        <ProfileItem
-          label="Logout"
-          danger
-          icon={<LogOut size={18} />}
-          onClick={() => {
-            localStorage.clear();
-            navigate("/");
-          }}
-        />
+          {/* LOGOUT */}
+          <button
+            onClick={() => {
+              localStorage.clear();
+              navigate("/");
+            }}
+            className="
+              w-full
+              flex items-center justify-between
+              bg-white
+              rounded-xl
+              shadow
+              px-4 py-3
+              text-red-600
+              hover:bg-red-50
+            "
+          >
+            <div className="flex items-center gap-3">
+              <LogOut size={18} />
+              <span className="font-medium">Log out</span>
+            </div>
+            <ChevronRight size={18} />
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-/* ================= ITEM ================= */
-
-function ProfileItem({ label, onClick, danger, icon }) {
+/* ===== ITEM MENU (RESPONSIVE) ===== */
+function Item({ icon, label }) {
   return (
     <div
-      onClick={onClick}
-      className={`flex items-center justify-between px-6 py-4 cursor-pointer
-        ${danger ? "text-red-600 hover:bg-red-50" : "hover:bg-gray-50"}
-      `}
+      className="
+        bg-white
+        rounded-xl
+        shadow
+        px-4 py-3
+        flex items-center justify-between
+        hover:bg-gray-50
+        cursor-pointer
+      "
     >
-      <span className="font-medium">{label}</span>
-      {icon}
+      <div className="flex items-center gap-3 min-w-0">
+        {icon}
+        <span className="font-medium truncate">{label}</span>
+      </div>
+      <ChevronRight size={18} className="shrink-0" />
     </div>
   );
 }

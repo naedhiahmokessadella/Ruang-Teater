@@ -17,10 +17,11 @@ export default function Login() {
     };
 
     localStorage.setItem("user", JSON.stringify(user));
-    navigate("/profile");
+
+    // ✅ REDIRECT KE HOME (RUANG TEATER)
+    navigate("/");
   };
 
-  // dummy social login
   const handleSocialLogin = (provider) => {
     const user = {
       name: provider === "google" ? "Google User" : "Facebook User",
@@ -29,7 +30,9 @@ export default function Login() {
     };
 
     localStorage.setItem("user", JSON.stringify(user));
-    navigate("/profile");
+
+    // ✅ REDIRECT KE HOME (RUANG TEATER)
+    navigate("/");
   };
 
   return (
@@ -42,7 +45,6 @@ export default function Login() {
           Masuk ke akun kamu
         </p>
 
-        {/* GOOGLE LOGIN */}
         <button
           onClick={() => handleSocialLogin("google")}
           className="w-full flex items-center justify-center gap-3 border py-3 rounded-lg mb-3 hover:bg-gray-50"
@@ -57,7 +59,6 @@ export default function Login() {
           </span>
         </button>
 
-        {/* FACEBOOK LOGIN */}
         <button
           onClick={() => handleSocialLogin("facebook")}
           className="w-full flex items-center justify-center gap-3 border py-3 rounded-lg mb-6 hover:bg-gray-50"
@@ -72,14 +73,12 @@ export default function Login() {
           </span>
         </button>
 
-        {/* DIVIDER */}
         <div className="flex items-center gap-3 mb-6">
           <div className="flex-1 h-px bg-gray-300" />
           <span className="text-sm text-gray-400">atau</span>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
 
-        {/* FORM LOGIN */}
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="relative">
             <Mail className="absolute left-3 top-3.5 text-gray-400" size={18} />
@@ -88,8 +87,7 @@ export default function Login() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border pl-10 pr-4 py-3 rounded-lg
-                focus:ring-2 focus:ring-[#800000] outline-none"
+              className="w-full border pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-[#800000] outline-none"
               required
             />
           </div>
@@ -101,21 +99,18 @@ export default function Login() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border pl-10 pr-4 py-3 rounded-lg
-                focus:ring-2 focus:ring-[#800000] outline-none"
+              className="w-full border pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-[#800000] outline-none"
               required
             />
           </div>
 
           <button
-            className="w-full bg-[#800000] text-white py-3 rounded-lg
-              hover:bg-[#6b0000] transition"
+            className="w-full bg-[#800000] text-white py-3 rounded-lg hover:bg-[#6b0000] transition"
           >
             Login
           </button>
         </form>
 
-        {/* SIGNUP LINK */}
         <p className="text-sm text-center text-gray-500 mt-6">
           Belum punya akun?{" "}
           <Link to="/signup" className="text-[#800000] font-medium">
