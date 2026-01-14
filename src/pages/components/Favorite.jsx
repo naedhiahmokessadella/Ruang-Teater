@@ -23,21 +23,32 @@ export default function Favorite() {
     <div className="p-6 pb-24">
       <h1 className="text-xl font-bold mb-4">Favorite</h1>
 
-      <div className="space-y-4">
+      {/* GRID FAVORITE (KOTAK & PENUH) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {favorites.map((event) => (
           <div
             key={event.id}
             onClick={() => navigate(`/event/${event.id}`)}
-            className="bg-white shadow rounded-xl overflow-hidden cursor-pointer"
+            className="bg-white rounded-xl shadow-sm cursor-pointer
+                       hover:shadow-md transition overflow-hidden"
           >
-            <img
-              src={event.image}
-              alt={event.title}
-              className="w-full h-40 object-cover"
-            />
-            <div className="p-4">
-              <h3 className="font-bold">{event.title}</h3>
-              <p className="text-sm text-gray-500">{event.date}</p>
+            {/* GAMBAR PERSEGI */}
+            <div className="aspect-square w-full">
+              <img
+                src={event.image}
+                alt={event.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* INFO */}
+            <div className="p-3">
+              <h3 className="text-sm font-semibold line-clamp-2">
+                {event.title}
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">
+                {event.date}
+              </p>
             </div>
           </div>
         ))}
