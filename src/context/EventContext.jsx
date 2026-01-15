@@ -1,28 +1,17 @@
 import { createContext, useContext } from "react";
-import useDummyData from "../hooks/useDummyData";
-import { useNavigate } from "react-router-dom";
+import useEventsApi from "../hooks/useEventsApi";
 
-// Buat context
 const EventContext = createContext();
 
-// Provider
 export function EventProvider({ children }) {
-  const { events } = useDummyData();
-  const navigate = useNavigate(); // ✅ Hook React Router
-
-  // Tambahkan fungsi navigasi untuk detail event
-  const goToEventDetail = (id) => {
-    navigate(`/event/${id}`);
-  };
-
+  const value = useEventsApi();
   return (
-    <EventContext.Provider value={{ events, goToEventDetail }}>
+    <EventContext.Provider value={value}>
       {children}
     </EventContext.Provider>
   );
 }
 
-// Hook custom untuk akses context
 export function useEvents() {
   return useContext(EventContext);
 }

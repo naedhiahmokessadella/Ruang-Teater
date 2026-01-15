@@ -1,6 +1,8 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+/* ================= SHADCN UTILS ================= */
+
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
@@ -9,25 +11,33 @@ export function cn(...inputs) {
 
 const FAVORITE_KEY = "favorite_events";
 
-export const getFavorites = () => {
-  return JSON.parse(localStorage.getItem(FAVORITE_KEY)) || [];
-};
+export function getFavorites() {
+  try {
+    return JSON.parse(localStorage.getItem(FAVORITE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
 
-export const addFavorite = (event) => {
+export function addFavorite(event) {
+  if (!event?.id) return;
+
   const favorites = getFavorites();
-  const exists = favorites.some(item => item.id === event.id);
+  const exists = favorites.some((item) => item.id === event.id);
 
   if (!exists) {
-    favorites.push(event);
-    localStorage.setItem(FAVORITE_KEY, JSON.stringify(favorites));
+    localStorage.setItem(
+      FAVORITE_KEY,
+      JSON.stringify([...favorites, event])
+    );
   }
-};
+}
 
-export const removeFavorite = (id) => {
-  const favorites = getFavorites().filter(item => item.id !== id);
+export function removeFavorite(id) {
+  const favorites = getFavorites().filter((item) => item.id !== id);
   localStorage.setItem(FAVORITE_KEY, JSON.stringify(favorites));
-};
+}
 
-export const isEventFavorite = (id) => {
-  return getFavorites().some(item => item.id === id);
-};
+export function isEventFavorite(id) {
+  return getFavorites().some((item) => item.id === id);
+}

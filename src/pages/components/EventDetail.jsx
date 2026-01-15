@@ -7,160 +7,142 @@ import {
   Share2,
   Heart,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEvents } from "../../context/EventContext";
 
 export default function EventDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { events } = useEvents();
+  const { events, loading } = useEvents();
 
-  const event = events.find((e) => e.id === Number(id));
   const [isFavorite, setIsFavorite] = useState(false);
 
-  if (!event) {
-    return <p className="p-6">Event tidak ditemukan</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Loading event...</p>
+      </div>
+    );
   }
 
-  // =========================
-  // FAVORITE LOGIC (FIX)
-  // =========================
-  const toggleFavorite = () => {
-    const stored = JSON.parse(localStorage.getItem("favorites")) || [];
+  const event = events.find((e) => String(e.id) === String(id));
 
-    const exists = stored.find((item) => item.id === event.id);
+  if (!event) {
+    return <p className="p-4">Event tidak ditemukan</p>;
+  }
 
-    let updatedFavorites;
-
-    if (exists) {
-      updatedFavorites = stored.filter((item) => item.id !== event.id);
-      setIsFavorite(false);
-    } else {
-      updatedFavorites = [...stored, event];
-      setIsFavorite(true);
-    }
-
-    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-  };
-
-  // Sync icon ❤️ saat halaman dibuka
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("favorites")) || [];
-    const exists = stored.some((item) => item.id === event.id);
-    setIsFavorite(exists);
+    setIsFavorite(stored.some((item) => item.id === event.id));
   }, [event.id]);
 
-  const handleRegister = () => {
-    navigate(`/ticket/${event.id}`);
+  const toggleFavorite = () => {
+    const stored = JSON.parse(localStorage.getItem("favorites")) || [];
+    const exists = stored.some((item) => item.id === event.id);
+
+    const updated = exists
+      ? stored.filter((item) => item.id !== event.id)
+      : [...stored, event];
+
+    setIsFavorite(!exists);
+    localStorage.setItem("favorites", JSON.stringify(updated));
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50 pb-24 text-sm">
+      {/* HEADER */}
+      <div className="sticky top-0 bg-white border-b z-30">
+        <div className="max-w-4xl mx-auto px-3 py-2 flex justify-between items-center">
           <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition cursor-pointer"
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-1 text-gray-600"
           >
-            <ArrowLeft size={20} />
-            <span className="font-medium">Back</span>
+            <ArrowLeft size={16} />
+            <span>Back</span>
           </button>
 
-          <h1 className="text-xl font-bold bg-gradient-to-r from-red-800 to-red-500 bg-clip-text text-transparent">
+          <h1 className="text-sm font-semibold text-red-600">
             Event Details
           </h1>
 
-          <div className="w-20" />
+          <div className="w-6" />
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-6 relative z-20">
-        {/* Image */}
-        <div className="relative rounded-2xl overflow-hidden shadow-lg mb-6">
+      {/* CONTENT */}
+      <div className="max-w-3xl mx-auto px-3 py-4">
+        {/* IMAGE */}
+        <div className="relative rounded-xl overflow-hidden shadow mb-4">
           <img
             src={event.image}
             alt={event.title}
-            className="w-full h-80 object-cover"
+            className="w-full h-44 sm:h-56 object-cover"
           />
 
-          <div className="absolute top-4 right-4 flex gap-2 z-30">
+          <div className="absolute top-2 right-2 flex gap-1">
             <button
-              type="button"
               onClick={toggleFavorite}
-              className={`p-3 rounded-full backdrop-blur-md transition cursor-pointer ${
+              className={`p-2 rounded-full ${
                 isFavorite
                   ? "bg-red-500 text-white"
                   : "bg-white/80 text-gray-700"
               }`}
             >
-              <Heart size={20} fill={isFavorite ? "currentColor" : "none"} />
+              <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
             </button>
 
-            <button
-              type="button"
-              className="p-3 rounded-full bg-white/80 text-gray-700 cursor-pointer"
-            >
-              <Share2 size={20} />
+            <button className="p-2 rounded-full bg-white/80 text-gray-700">
+              <Share2 size={14} />
             </button>
           </div>
         </div>
 
-        {/* Info */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <span className="inline-block px-3 py-1 bg-blue-100 text-blue-600 text-xs font-semibold rounded-full mb-3">
+        {/* INFO */}
+        <div className="bg-white rounded-xl shadow p-4 mb-4">
+          <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">
             {event.category}
           </span>
 
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold mt-2">
             {event.title}
           </h2>
 
-          <p className="text-gray-600 mb-4">
+          <p className="text-xs text-gray-500 mb-3">
             Organized by {event.organizer}
           </p>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <Info icon={<Calendar size={20} />} label="Date" value={event.date} />
-            <Info icon={<Clock size={20} />} label="Time" value={event.time} />
-            <Info
-              icon={<MapPin size={20} />}
-              label="Location"
-              value={`${event.location} • ${event.distance}`}
-            />
-            <Info
-              icon={<Users size={20} />}
-              label="Attendance"
-              value={`${event.attendees} / ${event.capacity}`}
-            />
-          </div>
+          <Info icon={<Calendar size={14} />} label="Date" value={event.date} />
+          <Info icon={<Clock size={14} />} label="Time" value={event.time} />
+          <Info
+            icon={<MapPin size={14} />}
+            label="Location"
+            value={event.location}
+          />
+          <Info
+            icon={<Users size={14} />}
+            label="Attendance"
+            value={`${event.attendees}/${event.capacity}`}
+          />
 
-          <h3 className="font-bold mb-2">About This Event</h3>
-          <p className="text-gray-600">{event.description}</p>
+          <p className="text-xs text-gray-600 mt-3">
+            {event.description}
+          </p>
         </div>
 
-        {/* Action Buttons */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 relative z-30 pointer-events-auto">
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={handleRegister}
-              className="flex-1 py-4 rounded-xl font-semibold text-white bg-gradient-to-r from-red-900 to-red-500 hover:from-red-200 hover:to-red-800 cursor-pointer"
-            >
-              Buy Now
-            </button>
+        {/* ACTION */}
+        <button
+          onClick={() =>
+            navigate(`/payment/${event.id}`, { state: event })
+          }
+          className="w-full py-3 rounded-lg text-white font-semibold bg-red-700"
+        >
+          Beli
+        </button>
 
-            <button
-              type="button"
-              className="px-6 py-4 border-2 border-red-500 text-red-500 font-semibold rounded-xl cursor-pointer"
-            >
-              {event.price}
-            </button>
-          </div>
-        </div>
+        <p className="text-center text-xs text-red-600 mt-2">
+          {event.price}
+        </p>
       </div>
     </div>
   );
@@ -168,11 +150,13 @@ export default function EventDetail() {
 
 function Info({ icon, label, value }) {
   return (
-    <div className="flex gap-3 bg-gray-50 p-4 rounded-xl">
-      <div className="p-2 bg-blue-100 rounded-lg">{icon}</div>
+    <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg mb-2">
+      <div className="p-1.5 bg-red-100 text-red-600 rounded">
+        {icon}
+      </div>
       <div>
-        <p className="text-xs text-gray-500">{label}</p>
-        <p className="font-semibold">{value}</p>
+        <p className="text-[10px] text-gray-500">{label}</p>
+        <p className="text-xs font-medium">{value}</p>
       </div>
     </div>
   );

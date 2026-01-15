@@ -1,55 +1,107 @@
-import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 
-// Pages
-import Home from "./pages/Home";
-import History from "./pages/History";
-import Location from "./pages/Location";
+// Public pages
+import Home from "./pages/footer/Home";
+import History from "./pages/footer/History";
+import Location from "./pages/footer/Location";
+import Favorite from "./pages/footer/Favorite";
 import EventDetail from "./pages/components/EventDetail";
-import Ticket from "./pages/Ticket";
-import Favorite from "./pages/components/Favorite";
-import AdminLogin from "./auth/adminauth/AdminLogin";
-import AdminDashboard from "./components/admin/AdminDashboard";
+import Payment from "./pages/components/Payment";
+import Ticket from "./pages/components/Ticket";
 import Profile from "./pages/Profile";
+
+// Admin
+import AdminDashboard from "./components/admin/pages/AdminDashboard";
+import AdminLayout from "./components/admin/component/AdminLayout";
+import AdminEvents from "./components/admin/pages/AdminEvents";
+import AdminUsers from "./components/admin/pages/AdminUsers";
+import AdminSettings from "./components/admin/pages/AdminSettings";
+import AdminLogin from "./auth/adminauth/AdminLogin";
 
 // Components
 import Navbar from "./components/public/Navbar";
 import Footer from "./components/public/Footer";
 
 function App() {
-  // 🔹 Tambahkan state search di App.jsx
+  const [stage, setStage] = useState("curtain");
   const [searchInput, setSearchInput] = useState("");
+  const location = useLocation();
+
+  useEffect(() => {
+    const curtainTimer = setTimeout(() => setStage("logo"), 3000);
+    const logoTimer = setTimeout(() => setStage("main"), 5000);
+
+    return () => {
+      clearTimeout(curtainTimer);
+      clearTimeout(logoTimer);
+    };
+  }, []);
+
+  // Curtain animation
+  if (stage === "curtain") {
+    return (
+      <>
+        <div className="fixed top-0 left-0 h-full bg-purple-900 animate-curtain-left z-50" />
+        <div className="fixed top-0 right-0 h-full bg-purple-900 animate-curtain-right z-50" />
+      </>
+    );
+  }
+
+  // Splash logo
+  if (stage === "logo") {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <img
+          src="/src/LogoTeater.png"
+          alt="Ruang Teater Logo"
+          className="w-72 h-72 object-contain"
+        />
+      </div>
+    );
+  }
+
+  const showNavbar = location.pathname === "/";
+  const showFooter = ["/", "/favorite", "/location", "/history"].includes(
+    location.pathname
+  );
 
   return (
     <>
-      {/* Pass state ke Navbar */}
-      <Navbar
-        searchInput={searchInput}
-        setSearchInput={setSearchInput}
-      />
+      {showNavbar && (
+        <Navbar
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+        />
+      )}
 
       <Routes>
-        {/* USER */}
+        {/* PUBLIC */}
         <Route path="/" element={<Home searchQuery={searchInput} />} />
         <Route path="/favorite" element={<Favorite />} />
         <Route path="/history" element={<History />} />
         <Route path="/location" element={<Location />} />
         <Route path="/event/:id" element={<EventDetail />} />
+        <Route path="/payment/:id" element={<Payment />} />
         <Route path="/ticket/:id" element={<Ticket />} />
-        
-
-        {/* PROFILE */}
         <Route path="/profile" element={<Profile />} />
 
-        {/* ADMIN */}
-        <Route path="/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        {/* ADMIN LOGIN */}
+        <Route path="/admin/login" element={<AdminLogin />} />
 
-        {/* fallback */}
+        {/* ADMIN PANEL */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="events" element={<AdminEvents />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
+
+        {/* FALLBACK */}
         <Route path="*" element={<Home searchQuery={searchInput} />} />
       </Routes>
 
-      <Footer />
+      {showFooter && <Footer />}
     </>
   );
 }

@@ -1,17 +1,40 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; 
-import Footer from "../components/public/Footer";
-import ProductCard from "../components/public/ProductCard";
-import useDummyData from "../hooks/useDummyData";
-import { Sparkles, Calendar, MapPin, Star, TrendingUp, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Footer from "../../components/public/Footer";
+import ProductCard from "../../components/public/ProductCard";
+import { useEvents } from "../../context/EventContext";
+import {
+  Sparkles,
+  Calendar,
+  MapPin,
+  Star,
+  TrendingUp,
+  Clock,
+} from "lucide-react";
 
 export default function Home({ searchQuery }) {
-  const { events } = useDummyData();
+  const { events, loading } = useEvents();
   const [favorites, setFavorites] = useState([]);
   const [voucherClaimed, setVoucherClaimed] = useState(false);
   const navigate = useNavigate();
 
-  // Toggle favorite
+  // ⏳ Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Loading events...</p>
+      </div>
+    );
+  }
+
+  // 🔍 FILTER EVENTS BERDASARKAN SEARCH
+  const filteredEvents = events.filter((event) =>
+    (event.title || "")
+      .toLowerCase()
+      .includes((searchQuery || "").toLowerCase())
+  );
+
+  // ⭐ Toggle favorite
   const toggleFavorite = (event) => {
     setFavorites((prev) =>
       prev.some((e) => e.id === event.id)
@@ -20,19 +43,14 @@ export default function Home({ searchQuery }) {
     );
   };
 
-  // Voucher
+  // 🎟️ Voucher
   const handleClaimVoucher = () => {
     setVoucherClaimed(true);
     alert("🎉 Voucher FIRST20 berhasil diklaim!");
   };
 
-  // 🔍 FILTER EVENTS BERDASARKAN SEARCH
-  const filteredEvents = events.filter((event) =>
-    (event.title || "").toLowerCase().includes((searchQuery || "").toLowerCase())
-  );
-
   return (
-    <div className="min-h-screen bg-grey-100">
+    <div className="min-h-screen bg-gray-100">
       {/* HERO */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-red-700 via-red-800 to-pink-950" />
@@ -70,9 +88,13 @@ export default function Home({ searchQuery }) {
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-1">
               <TrendingUp className="text-red-500" size={20} />
-              <span className="text-red-500 font-bold text-sm">HAPPENING NOW</span>
+              <span className="text-red-500 font-bold text-sm">
+                HAPPENING NOW
+              </span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800">Featured Event</h2>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Featured Event
+            </h2>
           </div>
 
           <div className="overflow-x-auto scrollbar-hide">
@@ -85,7 +107,9 @@ export default function Home({ searchQuery }) {
                     isFavorite={favorites.some((e) => e.id === event.id)}
                     onToggleFavorite={() => toggleFavorite(event)}
                     setPage={(page) => navigate(`/${page}`)}
-                    setSelectedEvent={(ev) => navigate(`/event/${ev.id}`)}
+                    setSelectedEvent={(ev) =>
+                      navigate(`/event/${ev.id}`)
+                    }
                   />
                 </div>
               ))}
@@ -97,13 +121,19 @@ export default function Home({ searchQuery }) {
         <section className="px-5">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="text-purple-600" size={18} />
-            <span className="text-purple-600 font-semibold text-sm">COMING SOON</span>
+            <span className="text-purple-600 font-semibold text-sm">
+              COMING SOON
+            </span>
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Upcoming Events</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Upcoming Events
+          </h2>
 
           {filteredEvents.length === 0 ? (
-            <p className="text-center text-gray-500 mt-10">Event tidak ditemukan 😢</p>
+            <p className="text-center text-gray-500 mt-10">
+              Event tidak ditemukan 😢
+            </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredEvents.map((event) => (
@@ -113,19 +143,24 @@ export default function Home({ searchQuery }) {
                   isFavorite={favorites.some((e) => e.id === event.id)}
                   onToggleFavorite={() => toggleFavorite(event)}
                   setPage={(page) => navigate(`/${page}`)}
-                  setSelectedEvent={(ev) => navigate(`/event/${ev.id}`)}
+                  setSelectedEvent={(ev) =>
+                    navigate(`/event/${ev.id}`)
+                  }
                 />
               ))}
             </div>
           )}
         </section>
 
-        {/* 🎟️ PROMO VOUCHER */}
+        {/* PROMO */}
         <section className="px-5 mt-10">
           <div className="relative bg-gradient-to-r from-red-800 to-red-900 rounded-3xl p-6 text-white shadow-xl border-2 border-amber-600">
-            <h3 className="text-xl font-bold mb-2">🎟️ Get 20% Off First Ticket!</h3>
+            <h3 className="text-xl font-bold mb-2">
+              🎟️ Get 20% Off First Ticket!
+            </h3>
             <p className="text-sm mb-4 text-amber-100">
-              Use code <b className="text-amber-300">FIRST20</b> at checkout
+              Use code{" "}
+              <b className="text-amber-300">FIRST20</b> at checkout
             </p>
 
             <button
@@ -137,7 +172,9 @@ export default function Home({ searchQuery }) {
                   : "bg-amber-100 text-red-900 hover:scale-105"
               }`}
             >
-              {voucherClaimed ? "Voucher Claimed ✅" : "Claim Now →"}
+              {voucherClaimed
+                ? "Voucher Claimed ✅"
+                : "Claim Now →"}
             </button>
           </div>
         </section>
@@ -152,7 +189,7 @@ export default function Home({ searchQuery }) {
   );
 }
 
-/* STAT COMPONENT */
+/* STAT */
 function Stat({ icon, label, value }) {
   return (
     <div className="bg-white/15 backdrop-blur-md rounded-2xl p-4 border border-white/20">
